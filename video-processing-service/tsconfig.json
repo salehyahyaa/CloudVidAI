@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "rootDir": "src", /*where our file starts when code compiles*/
+        "outDir": "dist", /*where our final build files will be*/
+        "strict": true, /*scrict for for typescript checking*/
+        "esModuleInterop": true},
+        "include": ["src/**/*.ts"],
+        "exclude": ["node_moudles"]
+    }
