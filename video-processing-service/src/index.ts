@@ -26,7 +26,8 @@ app.get ("/process-video", (req, res) => {
         });                                   //=========================Took an extra step so we specify to the client whitch FilePath is missing
 
         ffmpeg(inputFilePath)
-
+        .outputOptions('-vf', 'scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2') //720p /*forceOrginalAspect... is just a force command to make sure there is no distortion*/
+        .on()
     });
 //========================================================= Server Starting ==================
 app.listen(port, () => { /*this API endpoint allows us to start our sever on our locally hosted comptuter*/   /*() is a callback function*/
