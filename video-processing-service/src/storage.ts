@@ -39,28 +39,51 @@ export function convertVideo(rawVideoName: string, processedVideoName: string) {
 
 }
 
+
 /** 
 * @param fileName - The name of the file to download from the 
 * {@link rawVideoBucketName} bucket into the {@link localProcessedVideoPath} folder
 * @returns A promise that resolves when the video has been converted.
 */
-
-export async function dowlocalRawVideo(fileName: string) {
+export async function downlocalRawVideo(fileName: string) {
     await storage.bucket(rawVideoBucketName) /*await blocks any console.log() code from running until rawVideoBucketName is stored within bucket */ 
-        .file(fileName)
-        .download({ destination: `${localRawVideoPath}/${fileName}` });
+        .file(fileName) /*once reacived file */
+        .download({ destination: `${localRawVideoPath}/${fileName}` }); /*add it to this bucket */
 
     console.log(
-        `gs://${rawVideoBucketName}/${fileName} downloaded to ${localRawVideoPath}/${fileName}} `
+        `gs://${rawVideoBucketName}/${fileName} downloaded to ${localRawVideoPath}/${fileName}} ` /*gs == GoogleStorage*/
     )
 }
+
 
 /** 
 * @param fileName - The name of the file to download from the 
 * {@link localProcessedVideoPath} folder into the {@link processedVideoBucketName}
 * @returns A promise that resolves when the video has been uploaded.
 */
-
 export async function uploadProcessedVideo(fileName: string) {
+    const bucket = storage.bucket(processedVideoBucketName);
 
+    await bucket.upload(`${localProcessedVideoPath}/${fileName}`, {
+        destination: fileName
+    });
+    console.log(
+        `${localProcessedVideoPath}/${fileName} uploaded to gs://${processedVideoBucketName}/${fileName}.`
+        );
+
+    await bucket.file(fileName).makePublic();    
 }
+
+
+/** 
+* @param filePath - The path of the file too delete 
+* @returns A promise that resolves when the file has been deleted.
+*/
+function deleteFile(filePath: string): Promise<void> { 
+    return new Promise ((resolve, reject) => {
+        if (!fs.existsSync(filePath)) {
+            reject(`File ${filePath} does not exist.`)
+        }
+    });
+} 
+
