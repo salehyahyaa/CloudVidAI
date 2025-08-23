@@ -1,6 +1,8 @@
 // ======================================================== Imports ========================================================================
 import express from "express";
 import ffmpeg from "fluent-ffmpeg"; /*CLI tool */
+import { setupDirectories } from "./storage";
+
 //========================================================= Config Starting ========================================================================
 const app = express()
 app.use(express.json()) /*this is the middleware code, choosing JSON as your data format*/

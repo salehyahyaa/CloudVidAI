@@ -5,6 +5,7 @@
 import { Storage } from "@google-cloud/storage";
 import fs from "fs";
 import ffmpeg from "fluent-ffmpeg";
+import { dir } from "console";
 
 const storage = new Storage() /*Creating an instance of storage so we can interact with that API*/
 const  rawVideoBucketName = "sy-raw-videos" /*Downlaod from this bucket*/ 
@@ -14,7 +15,12 @@ const localRawVideoPath = "./sy-raw-videos" /*the downloaded raw video uplaods w
 const localProcessedVideoPath = "./sy-processed-videos" /*the processed vidoes will be placed within this folder*/
 
 
+/**
+ * Creating the local directories for raw and processed videos.
+ */
 export function setupDirectories() { /*Creates the local dependencies for raw AND processed videos */
+    ensureDirectoryExistence(localRawVideoPath)
+    ensureDirectoryExistence(localProcessedVideoPath)
 }
 
 
@@ -79,11 +85,34 @@ export async function uploadProcessedVideo(fileName: string) {
 * @param filePath - The path of the file too delete 
 * @returns A promise that resolves when the file has been deleted.
 */
-function deleteFile(filePath: string): Promise<void> { 
-    return new Promise ((resolve, reject) => {
-        if (!fs.existsSync(filePath)) {
-            reject(`File ${filePath} does not exist.`)
+function deleteFile(filePath: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (fs.existsSync(filePath)) {
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.log(`Failed to delete file at ${filePath}`, err);
+          reject(err);
+        } else {
+          console.log(`File deleted at ${filePath}`);
+          resolve();
         }
-    });
-} 
+      });
+    } else {
+      console.log(`File not found at ${filePath}, skipping the delete.`);
+      resolve();
+    }
+  });
+}
+
+
+/**
+ * Ennsures a Directory exisits, creating it if necessary.
+ * @param {string} dirPath - The Directory path to check
+ */
+function ensureDirectoryExistence(dirPath: string;) {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true});
+        console.log(`Directory created at ${dirPath}`);
+    }
+}
 
